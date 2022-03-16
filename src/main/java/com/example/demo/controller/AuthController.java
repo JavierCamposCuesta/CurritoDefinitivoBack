@@ -31,7 +31,8 @@ import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.JWTUtil;
 import com.example.demo.service.UsuarioService;
 
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @RestController
 public class AuthController {
 	

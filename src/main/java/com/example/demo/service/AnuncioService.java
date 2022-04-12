@@ -352,22 +352,39 @@ public class AnuncioService {
 	 * @param anuncio
 	 */
 	public Anuncio addAnuncioSolicitado(String email, Anuncio anuncio) {
-		try {
-			Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-			anuncioRepository.getById(anuncio.getId()).getListaSolicitantes().add(usuario);
-			Anuncio anuncioEditar = anuncioRepository.findById(anuncio.getId()).orElse(null);
-			
-			usuario.getListaDemandados().add(anuncio);
-			
-//			anuncioRepository.save(anuncioEditar);
-			usuarioRepository.save(usuario);
-			return anuncioEditar;
-		}
-		catch (Exception e) {
-			throw new AnuncioYaExistenteException(anuncio.getId());
-		}
 		
-	}
+			if(comprobarAnuncioSolicitado(email, anuncio)) {
+				throw new AnuncioYaExistenteException(anuncio.getId());
+			}
+			else {
+				try {
+					
+					Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+//					anuncioRepository.getById(anuncio.getId()).getListaSolicitantes().add(usuario);
+					Anuncio anuncioEditar = anuncioRepository.findById(anuncio.getId()).orElse(null);
+					anuncioEditar.getListaSolicitantes().add(usuario);
+					
+					usuario.getListaDemandados().add(anuncioEditar);
+					System.out.println(anuncioEditar.getListaSolicitantes().size());
+					System.out.println(usuario.getListaDemandados().size());
+					anuncioRepository.save(anuncioEditar);
+					System.out.println("Aqui llega");
+
+					//anuncioRepository.save(anuncioEditar);
+					System.out.println("Aqui llega 2");
+					return anuncioEditar;
+				}
+				catch (Exception e) {
+					throw new AnuncioYaExistenteException(69);
+				}
+				}
+			}
+			
+			
+			
+		
+		
+	
 	
 	/**
 	 * Metodo para comprobar si el anuncio ya ha sido añadido a la lista de solicitados

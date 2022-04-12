@@ -88,9 +88,9 @@ public class Usuario {
 		
 	}
 	
-public Usuario(int id) {
-		this.id = id;
-	}
+	public Usuario(int id) {
+			this.id = id;
+		}
 
 	
 

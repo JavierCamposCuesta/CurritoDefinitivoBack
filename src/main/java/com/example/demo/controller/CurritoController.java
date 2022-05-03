@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.error.AnuncioIdNoEstaEnListaExcetion;
 import com.example.demo.error.AnuncioIdNotFoundException;
@@ -112,11 +114,17 @@ public class CurritoController {
 	 * y error correspondiente en caso de que no se pueda crear debido a campos invalidos
 	 */
 	@PostMapping("/anuncio")
-	public ResponseEntity<Anuncio> addCurrito(@RequestBody Anuncio anuncio){
+	public ResponseEntity<Anuncio> addCurrito(@RequestParam("file") MultipartFile file, @RequestParam String titulo, @RequestParam String categoria,
+			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion){
+		System.out.println("fdsfdsf1" + titulo);
+		
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 				
-				return new ResponseEntity<Anuncio>(anuncioService.addAnuncio(email, anuncio), HttpStatus.CREATED);
+			
+				//	return new ResponseEntity<Anuncio>(anuncioService.addAnuncio(email, anuncio), HttpStatus.CREATED);
+				return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
+
 			}
 			else {
 				throw new TokenInvalidException();
@@ -516,6 +524,7 @@ public class CurritoController {
 		}
 		
     }
+	
 	
 	
 //#################### EXEPCIONES

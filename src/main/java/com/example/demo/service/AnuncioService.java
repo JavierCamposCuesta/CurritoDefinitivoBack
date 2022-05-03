@@ -200,6 +200,7 @@ public class AnuncioService {
 	 */
 	public List<Anuncio> mostrarAnunciosPorFiltro(String termino, String categoria, int[] rangoPrecio, String orden) {
 		List<Anuncio> listaAnuncios = new ArrayList<Anuncio>();
+		termino = termino.toUpperCase();
 		if(!categoria.equals("Todas las categorias") && rangoPrecio[0] == 0 && rangoPrecio[1] == 5000) {
 			if(orden.equals("Novedades")) {
 				listaAnuncios = anuncioRepository.getAnunciosPorCategoriaNovedades(termino, categoria);
@@ -367,9 +368,9 @@ public class AnuncioService {
 					usuario.getListaDemandados().add(anuncioEditar);
 					System.out.println(anuncioEditar.getListaSolicitantes().size());
 					System.out.println(usuario.getListaDemandados().size());
-					anuncioRepository.save(anuncioEditar);
+//					anuncioRepository.save(anuncioEditar);
 					System.out.println("Aqui llega");
-
+					usuarioRepository.save(usuario);
 					//anuncioRepository.save(anuncioEditar);
 					System.out.println("Aqui llega 2");
 					return anuncioEditar;
@@ -443,6 +444,7 @@ public class AnuncioService {
 				
 		
 	}
+	
 	
 	
 	

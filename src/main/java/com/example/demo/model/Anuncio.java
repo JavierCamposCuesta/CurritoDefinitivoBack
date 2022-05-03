@@ -48,6 +48,8 @@ public class Anuncio {
 //	@OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,orphanRemoval = true)
 //	private List<String>listaImagenes = new ArrayList<>();
 	
+    @OneToOne
+    private File file;
 	
 	private String categoria;
 	
@@ -113,6 +115,7 @@ public class Anuncio {
 		this.descripcion = descripcion;
 	}
 
+	
 //	public List<String> getListaImagenes() {
 //		return listaImagenes;
 //	}
@@ -121,8 +124,18 @@ public class Anuncio {
 //		this.listaImagenes = listaImagenes;
 //	}
 
+	
+
 	public String getCategoria() {
 		return categoria;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
 	}
 
 	public void setCategoria(String categoria) {

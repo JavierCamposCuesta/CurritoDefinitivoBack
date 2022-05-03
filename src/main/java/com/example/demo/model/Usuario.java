@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Clase usuario
  */
 @Entity
+@Table(name = "usuarioTable")
 public class Usuario {
 	
 	@Id
@@ -37,7 +40,7 @@ public class Usuario {
 	private LocalDate fechaNacimiento;
 	private String ubicacion;
 	
-	@OneToMany(
+	@ManyToMany(
 //			cascade = CascadeType.ALL, orphanRemoval = true
 			)
 	@JsonIgnore
@@ -55,7 +58,7 @@ public class Usuario {
 	@JsonIgnore
 	private List<Anuncio>listaTerminados = new ArrayList<Anuncio>();
 	
-	@OneToMany(
+	@ManyToMany(
 //			cascade = CascadeType.ALL
 			)
 	@JsonIgnore

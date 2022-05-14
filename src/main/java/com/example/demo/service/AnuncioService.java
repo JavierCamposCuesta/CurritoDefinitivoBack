@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.error.AnuncioIdNoEstaEnListaExcetion;
 import com.example.demo.error.AnuncioIdNotFoundException;
@@ -16,6 +18,7 @@ import com.example.demo.error.AnuncioYaExistenteException;
 import com.example.demo.error.CrearAnuncioException;
 import com.example.demo.model.Anuncio;
 import com.example.demo.model.Categoria;
+import com.example.demo.model.FileAnuncio;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.AnuncioRepository;
 import com.example.demo.repository.CategoriaRepository;
@@ -50,26 +53,57 @@ public class AnuncioService {
 	 * @param anuncio
 	 * @return el anuncio que se ha añadido
 	 */
-	public Anuncio addAnuncio(String email, Anuncio anuncio) {
-		if(anuncio.getTitulo().isBlank() || anuncio.getTitulo() == null || anuncio.getPrecio() < 0 ) {
+//	public Anuncio addAnuncio(String email, Anuncio anuncio) {
+//		if(anuncio.getTitulo().isBlank() || anuncio.getTitulo() == null || anuncio.getPrecio() < 0 ) {
+//			throw new CrearAnuncioException();
+//		}
+//		else {
+//		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
+//		nuevoAnuncio.setFechaAnuncio(LocalDateTime.now());
+//		nuevoAnuncio.setUbicacion(anuncio.getUbicacion());
+//		
+//		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+//		Categoria categoria = categoriaRepository.findById(anuncio.getCategoria()).orElse(null);
+//		categoria.getListaAnuncios().add(nuevoAnuncio);
+//		usuario.getListaOfertados().add(nuevoAnuncio);
+//		nuevoAnuncio.setAutorAnuncio(usuario);
+//		anuncioRepository.save(nuevoAnuncio);
+//		categoriaRepository.save(categoria);
+//		usuarioRepository.save(usuario);
+//		return nuevoAnuncio;
+//		}
+//		
+//	}
+	
+	public Anuncio addAnuncioCompleto(String email, String titulo, String categoria, String precio, String tipoPrecio,
+			String descripcion, String ubicacion, MultipartFile file) {
+		Double convertPrecio = Double.parseDouble(precio);
+		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
 			throw new CrearAnuncioException();
 		}
 		else {
-		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
+		Anuncio nuevoAnuncio = new Anuncio(titulo, categoria, convertPrecio, tipoPrecio, descripcion, ubicacion);
 		nuevoAnuncio.setFechaAnuncio(LocalDateTime.now());
-		nuevoAnuncio.setUbicacion(anuncio.getUbicacion());
+		nuevoAnuncio.setUbicacion(ubicacion);
+		
+		
+		
+		try {
+			nuevoAnuncio.setFile(file.getBytes());
+		} catch (IOException e) {
+			throw new CrearAnuncioException();
+		}
 		
 		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-		Categoria categoria = categoriaRepository.findById(anuncio.getCategoria()).orElse(null);
-		categoria.getListaAnuncios().add(nuevoAnuncio);
+		Categoria categoriaNueva = categoriaRepository.findById(categoria).orElse(null);
+		categoriaNueva.getListaAnuncios().add(nuevoAnuncio);
 		usuario.getListaOfertados().add(nuevoAnuncio);
 		nuevoAnuncio.setAutorAnuncio(usuario);
 		anuncioRepository.save(nuevoAnuncio);
-		categoriaRepository.save(categoria);
+		categoriaRepository.save(categoriaNueva);
 		usuarioRepository.save(usuario);
 		return nuevoAnuncio;
 		}
-		
 	}
 	
 	/**
@@ -78,25 +112,59 @@ public class AnuncioService {
 	 * @param anuncio
 	 * @return el nuevo anuncio ya editado
 	 */
-	public Anuncio editAnuncio(int id, Anuncio anuncio) {
+	public Anuncio editAnuncio(int id, String email, String titulo, String categoria, String precio, String tipoPrecio,
+			String descripcion, String ubicacion, MultipartFile file) {
 //		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
 //		nuevoAnuncio.setFechaAnuncio(LocalDate.now());
-		if(anuncio.getTitulo().isBlank() || anuncio.getTitulo() == null || anuncio.getPrecio() < 0 ) {
+		Double convertPrecio = Double.parseDouble(precio);
+		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
 			throw new CrearAnuncioException();
 		}
 		else {
 		Anuncio anuncioEditar = anuncioRepository.getById(id);
-		anuncioEditar.setTitulo(anuncio.getTitulo());
-		anuncioEditar.setCategoria(anuncio.getCategoria());
-		anuncioEditar.setPrecio(anuncio.getPrecio());
-		anuncioEditar.setTipoPrecio(anuncio.getTipoPrecio());
-		anuncioEditar.setDescripcion(anuncio.getDescripcion());
+		anuncioEditar.setTitulo(titulo);
+		anuncioEditar.setCategoria(categoria);
+		anuncioEditar.setPrecio(convertPrecio);
+		anuncioEditar.setTipoPrecio(tipoPrecio);
+		anuncioEditar.setDescripcion(descripcion);
+		anuncioEditar.setUbicacion(ubicacion);
+		try {
+			anuncioEditar.setFile(file.getBytes());
+		} catch (IOException e) {
+			throw new CrearAnuncioException();
+		}
 		
 		anuncioRepository.save(anuncioEditar);
 		return anuncioEditar;
 		}
 		
 	}
+	
+//	/**
+//	 * Metodo para editar un anuncio, le pasamos un id y un anuncio nuevo para editar los cambios
+//	 * @param id
+//	 * @param anuncio
+//	 * @return el nuevo anuncio ya editado
+//	 */
+//	public Anuncio editAnuncio(int id, Anuncio anuncio) {
+////		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
+////		nuevoAnuncio.setFechaAnuncio(LocalDate.now());
+//		if(anuncio.getTitulo().isBlank() || anuncio.getTitulo() == null || anuncio.getPrecio() < 0 ) {
+//			throw new CrearAnuncioException();
+//		}
+//		else {
+//		Anuncio anuncioEditar = anuncioRepository.getById(id);
+//		anuncioEditar.setTitulo(anuncio.getTitulo());
+//		anuncioEditar.setCategoria(anuncio.getCategoria());
+//		anuncioEditar.setPrecio(anuncio.getPrecio());
+//		anuncioEditar.setTipoPrecio(anuncio.getTipoPrecio());
+//		anuncioEditar.setDescripcion(anuncio.getDescripcion());
+//		
+//		anuncioRepository.save(anuncioEditar);
+//		return anuncioEditar;
+//		}
+//		
+//	}
 
 	/**
 	 * Este método sirve para borrar un anuncio, para ello tenemos que eliminar el anuncio en cascada de la lista de categoria y de la lista de ofertados
@@ -444,6 +512,8 @@ public class AnuncioService {
 				
 		
 	}
+
+	
 	
 	
 	

@@ -113,17 +113,40 @@ public class CurritoController {
 	 * @return anuncio en caso que se haya añadido el anuncio, notFound en caso de que el usuario no esté logueado
 	 * y error correspondiente en caso de que no se pueda crear debido a campos invalidos
 	 */
+//	@PostMapping("/anuncio")
+//	public ResponseEntity<Anuncio> addCurrito(@RequestParam MultipartFile file
+//			, @RequestParam String titulo, @RequestParam String categoria,
+//			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion
+//			){
+//		System.out.println("fdsfdsf1");
+//		System.out.println(titulo);
+//		System.out.println(file.getOriginalFilename());
+//		
+//			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+//				
+//			
+//				//	return new ResponseEntity<Anuncio>(anuncioService.addAnuncio(email, anuncio), HttpStatus.CREATED);
+//				return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
+//
+//			}
+//			else {
+//				throw new TokenInvalidException();
+//			}
+//				}
+	
 	@PostMapping("/anuncio")
-	public ResponseEntity<Anuncio> addCurrito(@RequestParam("file") MultipartFile file, @RequestParam String titulo, @RequestParam String categoria,
-			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion){
-		System.out.println("fdsfdsf1" + titulo);
+	public ResponseEntity<Anuncio> addCurrito(@RequestParam MultipartFile file
+			, @RequestParam String titulo, @RequestParam String categoria,
+			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion
+			){
 		
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 				
 			
-				//	return new ResponseEntity<Anuncio>(anuncioService.addAnuncio(email, anuncio), HttpStatus.CREATED);
-				return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
+					return new ResponseEntity<Anuncio>(anuncioService.addAnuncioCompleto(email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
+				//return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
 
 			}
 			else {
@@ -155,12 +178,16 @@ public class CurritoController {
 	 * @return Anuncio modificado en caso de que todo haya ido bien, error en caso de que no exista el anuncio o no este correctamente logueado
 	 */
 	@PutMapping("/anuncio/{id}")
-	public ResponseEntity<Anuncio> editCurrito(@RequestBody Anuncio anuncio, @PathVariable(value="id")int idAnuncio){
+	public ResponseEntity<Anuncio> editCurrito(@RequestParam MultipartFile file
+			, @RequestParam String titulo, @RequestParam String categoria,
+			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion,
+			@PathVariable(value="id")int idAnuncio){
+		
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && anuncioRepository.getById(idAnuncio)!= null) {
 				if(anuncioRepository.existsById(idAnuncio)) {
 					
-					return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, anuncio), HttpStatus.CREATED);
+					return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
 				}
 				else {
 					throw new AnuncioIdNotFoundException(idAnuncio);
@@ -170,6 +197,30 @@ public class CurritoController {
 				throw new TokenInvalidException();
 			}
 				}
+	
+//	/**
+//	 * Método para actualizar anuncios, recibe un id de anuncio y un anuncio, en caso que el anuncio exista cambia los valores
+//	 * del antiguo anuncio por los del nuevo
+//	 * @param anuncio
+//	 * @param idAnuncio
+//	 * @return Anuncio modificado en caso de que todo haya ido bien, error en caso de que no exista el anuncio o no este correctamente logueado
+//	 */
+//	@PutMapping("/anuncio/{id}")
+//	public ResponseEntity<Anuncio> editCurrito(@RequestBody Anuncio anuncio, @PathVariable(value="id")int idAnuncio){
+//			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//			if(email!=null && anuncioRepository.getById(idAnuncio)!= null) {
+//				if(anuncioRepository.existsById(idAnuncio)) {
+//					
+//					return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, anuncio), HttpStatus.CREATED);
+//				}
+//				else {
+//					throw new AnuncioIdNotFoundException(idAnuncio);
+//				}
+//			}
+//			else {
+//				throw new TokenInvalidException();
+//			}
+//				}
 	
 	
 	

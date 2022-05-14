@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 
 @Entity
-public class File {
+public class FileAnuncio {
 	
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)

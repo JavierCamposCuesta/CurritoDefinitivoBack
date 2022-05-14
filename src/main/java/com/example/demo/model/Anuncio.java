@@ -48,8 +48,7 @@ public class Anuncio {
 //	@OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,orphanRemoval = true)
 //	private List<String>listaImagenes = new ArrayList<>();
 	
-    @OneToOne
-    private File file;
+    private byte[] file;
 	
 	private String categoria;
 	
@@ -74,13 +73,14 @@ public class Anuncio {
 		
 	}
 
-	public Anuncio(String titulo, String categoria,double precio, String tipoPrecio, String descripcion) {
+	public Anuncio(String titulo, String categoria,double precio, String tipoPrecio, String descripcion, String ubicacion) {
 		super();
 		this.titulo = titulo;
 		this.precio = precio;
 		this.descripcion = descripcion;
 		this.categoria = categoria;
 		this.tipoPrecio = tipoPrecio;
+		this.ubicacion = ubicacion;
 	}
 
 	public int getId() {
@@ -130,11 +130,13 @@ public class Anuncio {
 		return categoria;
 	}
 
-	public File getFile() {
+	
+
+	public byte[] getFile() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public void setFile(byte[] file) {
 		this.file = file;
 	}
 

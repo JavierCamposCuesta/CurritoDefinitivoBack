@@ -32,6 +32,9 @@ public class Comentario {
 	
 	private String textoComentario;
 	private LocalDate fecha;
+	private int puntuacionEstrellas;
+	
+	private boolean realizado = false;
 	
 	@OneToOne()
 	@JsonBackReference
@@ -96,6 +99,26 @@ public class Comentario {
 	public void setAnuncio(Anuncio anuncio) {
 		this.anuncio = anuncio;
 	}
+
+	public int getPuntuacionEstrellas() {
+		return puntuacionEstrellas;
+	}
+
+	public void setPuntuacionEstrellas(int puntuacionEstrellas) {
+		this.puntuacionEstrellas = puntuacionEstrellas;
+	}
+
+	public boolean isRealizado() {
+		return realizado;
+	}
+
+	public void setRealizado(boolean realizado) {
+		this.realizado = realizado;
+	}
+	
+	
+	
+	
 	
 	
 

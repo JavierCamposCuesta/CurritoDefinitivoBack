@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,13 +16,12 @@ import com.example.demo.error.AnuncioYaExistenteException;
 import com.example.demo.error.CrearAnuncioException;
 import com.example.demo.model.Anuncio;
 import com.example.demo.model.Categoria;
-import com.example.demo.model.FileAnuncio;
+import com.example.demo.model.Comentario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.AnuncioRepository;
 import com.example.demo.repository.CategoriaRepository;
+import com.example.demo.repository.ComentarioRepository;
 import com.example.demo.repository.UsuarioRepository;
-
-import net.bytebuddy.dynamic.loading.PackageDefinitionStrategy.Definition.Undefined;
 
 /**
  * Servicio de anuncio, encargado de hacer todas las operaciones relacionadas con los anuncios
@@ -42,6 +39,9 @@ public class AnuncioService {
 	
 	@Autowired
 	private AnuncioRepository anuncioRepository;
+	
+	@Autowired
+	private ComentarioRepository comentarioRepository;
 	
 	public void crearUsuario(Usuario usuario) {
 		usuarioRepository.save(usuario);
@@ -78,6 +78,7 @@ public class AnuncioService {
 	public Anuncio addAnuncioCompleto(String email, String titulo, String categoria, String precio, String tipoPrecio,
 			String descripcion, String ubicacion, MultipartFile file) {
 		Double convertPrecio = Double.parseDouble(precio);
+		System.out.println("Aqui llega");
 		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
 			throw new CrearAnuncioException();
 		}
@@ -89,7 +90,12 @@ public class AnuncioService {
 		
 		
 		try {
-			nuevoAnuncio.setFile(file.getBytes());
+			if(file != null) {
+				nuevoAnuncio.setFile(file.getBytes());
+			}
+			else {
+				nuevoAnuncio.setFile(null);
+			}
 		} catch (IOException e) {
 			throw new CrearAnuncioException();
 		}
@@ -129,7 +135,12 @@ public class AnuncioService {
 		anuncioEditar.setDescripcion(descripcion);
 		anuncioEditar.setUbicacion(ubicacion);
 		try {
-			anuncioEditar.setFile(file.getBytes());
+			if(file != null) {
+				anuncioEditar.setFile(file.getBytes());
+			}
+			else {
+				anuncioEditar.setFile(null);
+			}
 		} catch (IOException e) {
 			throw new CrearAnuncioException();
 		}
@@ -195,52 +206,121 @@ public class AnuncioService {
 		
 	}
 
+//	/**
+//	 * metodo para marcar un anuncio como finalizado
+//	 * @param idAnuncio
+//	 * @param email
+//	 * @return el anuncio que se ha finalizado
+//	 */
+//	public Anuncio finalizarAnuncio(int idAnuncio, String email) {
+//		Anuncio anuncioBorrar = anuncioRepository.getById(idAnuncio);
+//		
+//		if(usuarioRepository.findByEmail(email).orElse(null).getListaOfertados().contains(anuncioBorrar)) {
+//		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+//		usuario.getListaOfertados().remove(anuncioBorrar);
+//		
+//		anuncioBorrar.setFechaFin(LocalDateTime.now());
+//		
+//		anuncioBorrar.setFinalizado(true);
+//		
+//		usuario.getListaTerminados().add(anuncioBorrar);
+//		
+//		usuarioRepository.save(usuario);
+//		return anuncioBorrar;
+//		}
+//		else {
+//			throw new AnuncioIdNoEstaEnListaExcetion(idAnuncio);
+//		}
+//
+//		
+//	}
+//	
+//	
+//	public Anuncio solicitanteAddAnuncio(int idAnuncio, String email, String emailSolicitante) {
+//		Anuncio anuncioAdd = anuncioRepository.getById(idAnuncio);
+//		System.out.println(emailSolicitante);
+////		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+//		Usuario solicitante = usuarioRepository.findByEmail(emailSolicitante).orElse(null);
+//		System.out.println(solicitante.getNombre());
+////		usuario.getListaOfertados().remove(anuncioBorrar);
+//		solicitante.getListaDemandados().remove(anuncioAdd);
+//		solicitante.getListaRealizados().add(anuncioAdd);
+//		
+//		
+//		
+//		
+//		usuarioRepository.save(solicitante);
+//		return anuncioAdd;
+//		
+//		
+//	}
+	
 	/**
-	 * metodo para marcar un anuncio como finalizado
+	 * metodo para marcar un anuncio como finalizado, para ello se realizan diferentes operacion
+	 * En primer lugar se modifica el usuario al que pertenece el anuncio, eliminandolo de su lista de pendientes, además
+	 * se le modifica la valoración puesta por el solicitante en el comentario
+	 * En segundo lugar se modifica el usuario solicitante, al cual se le asigna el anuncio como realizado
+	 * En tercer lugar se crea el comentario que realiza el dueño del anuncio al solicitante que lo realiza
+	 * En cuarto lugar se crea un comentario vacío, el cual tendrá que rellenar el solicitante valorando al ofertante del anuncio,
+	 * esta operación la realizará el solicitante cuando desee, mientras tanto el comentario aparecerá como no realizado
 	 * @param idAnuncio
+	 * @param emailSolicitante
+	 * @param textoComentario
+	 * @param puntuacionEstrellas
 	 * @param email
-	 * @return el anuncio que se ha finalizado
+	 * @return El anuncio finalizado
 	 */
-	public Anuncio finalizarAnuncio(int idAnuncio, String email) {
+	public Anuncio finalizarAnuncio(int idAnuncio, String emailSolicitante, String textoComentario,
+		String puntuacionEstrellas, String email) {
+		
 		Anuncio anuncioBorrar = anuncioRepository.getById(idAnuncio);
+		//Convertimos la puntuación a entero
+		int puntuacionEstrellasDouble = Integer.parseInt(puntuacionEstrellas);
 		
 		if(usuarioRepository.findByEmail(email).orElse(null).getListaOfertados().contains(anuncioBorrar)) {
+		//Realizamos operacion para el usuario
 		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 		usuario.getListaOfertados().remove(anuncioBorrar);
 		
 		anuncioBorrar.setFechaFin(LocalDateTime.now());
-		
 		anuncioBorrar.setFinalizado(true);
 		
 		usuario.getListaTerminados().add(anuncioBorrar);
 		
+		//Realizamos operaciones para solicitante
+		Usuario solicitante = usuarioRepository.findByEmail(emailSolicitante).orElse(null);
+		solicitante.getListaDemandados().remove(anuncioBorrar);
+		solicitante.getListaRealizados().add(anuncioBorrar);
+		solicitante.setPuntuacionMedia(puntuacionEstrellasDouble);
+		
+		//Realizamos operaciones de añadir el comentario
+		Comentario comentario = new Comentario();
+		comentario.setUsuarioComentador(usuario);
+		comentario.setUsuarioComentado(solicitante);
+		comentario.setAnuncio(anuncioBorrar);
+		comentario.setTextoComentario(textoComentario);
+		comentario.setPuntuacionEstrellas(puntuacionEstrellasDouble);
+		comentario.setFecha(LocalDate.now());
+		comentario.setRealizado(true);
+		
+		//Este comentario lo creamos y se rellenará cuando el solicitante decida rellenarlo, mientras
+		//no lo rellene aparecerá como pendiente
+		Comentario comentarioPorRealizar = new Comentario();
+		comentarioPorRealizar.setUsuarioComentador(solicitante);
+		comentarioPorRealizar.setUsuarioComentado(usuario);
+		comentarioPorRealizar.setAnuncio(anuncioBorrar);
+		
+		//Persistimos en bd todas las modificaciones
+		comentarioRepository.save(comentario);
+		comentarioRepository.save(comentarioPorRealizar);
 		usuarioRepository.save(usuario);
+		usuarioRepository.save(solicitante);
 		return anuncioBorrar;
 		}
 		else {
 			throw new AnuncioIdNoEstaEnListaExcetion(idAnuncio);
 		}
 
-		
-	}
-	
-	
-	public Anuncio solicitanteAddAnuncio(int idAnuncio, String email, String emailSolicitante) {
-		Anuncio anuncioAdd = anuncioRepository.getById(idAnuncio);
-		System.out.println(emailSolicitante);
-//		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-		Usuario solicitante = usuarioRepository.findByEmail(emailSolicitante).orElse(null);
-		System.out.println(solicitante.getNombre());
-//		usuario.getListaOfertados().remove(anuncioBorrar);
-		solicitante.getListaDemandados().remove(anuncioAdd);
-		solicitante.getListaRealizados().add(anuncioAdd);
-		
-		
-		
-		
-		usuarioRepository.save(solicitante);
-		return anuncioAdd;
-		
 		
 	}
 
@@ -434,13 +514,7 @@ public class AnuncioService {
 					anuncioEditar.getListaSolicitantes().add(usuario);
 					
 					usuario.getListaDemandados().add(anuncioEditar);
-					System.out.println(anuncioEditar.getListaSolicitantes().size());
-					System.out.println(usuario.getListaDemandados().size());
-//					anuncioRepository.save(anuncioEditar);
-					System.out.println("Aqui llega");
 					usuarioRepository.save(usuario);
-					//anuncioRepository.save(anuncioEditar);
-					System.out.println("Aqui llega 2");
 					return anuncioEditar;
 				}
 				catch (Exception e) {

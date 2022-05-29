@@ -40,6 +40,11 @@ public class Usuario {
 	private LocalDate fechaNacimiento;
 	private String ubicacion;
 	
+	//Valoraciones
+	private int totalPuntuacion = 0;
+	private int numeroValoraciones = 0;
+	private double puntuacionMedia = 0;
+	
 	@ManyToMany(
 //			cascade = CascadeType.ALL, orphanRemoval = true
 			)
@@ -70,18 +75,18 @@ public class Usuario {
 	@JsonIgnore
 	private List<Anuncio>listaRealizados = new ArrayList<Anuncio>();
 	
-	@OneToMany(
-			cascade = CascadeType.ALL, orphanRemoval = true
-			)
-	@JsonIgnore
-	private List<Comentario>comentariosPendientes = new ArrayList<>();
-	
-	@OneToMany(
-//			cascade = CascadeType.ALL, 
-			orphanRemoval = true
-			)
-	@JsonIgnore
-	private List<Comentario>listaComentarios = new ArrayList<>();
+//	@OneToMany(
+//			cascade = CascadeType.ALL, orphanRemoval = true
+//			)
+//	@JsonIgnore
+//	private List<Comentario>comentariosPendientes = new ArrayList<>();
+//	
+//	@OneToMany(
+////			cascade = CascadeType.ALL, 
+//			orphanRemoval = true
+//			)
+//	@JsonIgnore
+//	private List<Comentario>listaComentarios = new ArrayList<>();
 	
 	
 //	private List<Chat>listaChats = new ArrayList<Chat>();
@@ -256,29 +261,56 @@ public class Usuario {
 
 
 
-	public List<Comentario> getComentariosPendientes() {
-		return comentariosPendientes;
+//	public List<Comentario> getComentariosPendientes() {
+//		return comentariosPendientes;
+//	}
+//
+//
+//
+//	public void setComentariosPendientes(List<Comentario> comentariosPendientes) {
+//		this.comentariosPendientes = comentariosPendientes;
+//	}
+//
+//
+//
+//	public List<Comentario> getListaComentarios() {
+//		return listaComentarios;
+//	}
+//
+//
+//
+//	public void setListaComentarios(List<Comentario> listaComentarios) {
+//		this.listaComentarios = listaComentarios;
+//	}
+	
+
+	
+	public int getTotalPuntuacion() {
+		return totalPuntuacion;
 	}
 
-
-
-	public void setComentariosPendientes(List<Comentario> comentariosPendientes) {
-		this.comentariosPendientes = comentariosPendientes;
+	public void setTotalPuntuacion(int totalPuntuacion) {
+		this.totalPuntuacion = totalPuntuacion;
 	}
 
-
-
-	public List<Comentario> getListaComentarios() {
-		return listaComentarios;
+	public int getNumeroValoraciones() {
+		return numeroValoraciones;
 	}
 
-
-
-	public void setListaComentarios(List<Comentario> listaComentarios) {
-		this.listaComentarios = listaComentarios;
+	public void setNumeroValoraciones(int numeroValoraciones) {
+		this.numeroValoraciones = numeroValoraciones;
 	}
 
+	public double getPuntuacionMedia() {
+		return puntuacionMedia;
+	}
 
+	public void setPuntuacionMedia(double nuevaPuntuacion) {
+		this.totalPuntuacion += nuevaPuntuacion;
+		this.numeroValoraciones++;
+		
+		this.puntuacionMedia = this.totalPuntuacion/this.numeroValoraciones;
+	}
 
 	@Override
 	public int hashCode() {

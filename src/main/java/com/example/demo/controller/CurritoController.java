@@ -313,34 +313,53 @@ public class CurritoController {
 		
     }
 	
-	/**
-	 * Metodo para finalizar un anuncio, le pasamos el id del anuncio que vamos a finalizar
-	 * @param idAnuncio
-	 * @return El anuncio finalizado en caso que se realice la operacion, exepcion en caso que no exista el anuncio con ese id o el usuario no esté autorizado
-	 */
-	//Cambiar a put
-	@GetMapping("/anuncio/{id}/finalizar-anuncio")
-	public ResponseEntity<Anuncio> finalizarAnuncio(@PathVariable(value="id")int idAnuncio){
-		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
-			if(anuncioRepository.existsById(idAnuncio)) {
-				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, email));
-			}
-			else {
-				throw new AnuncioIdNotFoundException(idAnuncio);
-			}
-		}
-		else {
-			return ResponseEntity.notFound().build(); 
-		}
-	}
+//	/**
+//	 * Metodo para finalizar un anuncio, le pasamos el id del anuncio que vamos a finalizar
+//	 * @param idAnuncio
+//	 * @return El anuncio finalizado en caso que se realice la operacion, exepcion en caso que no exista el anuncio con ese id o el usuario no esté autorizado
+//	 */
+//	//Cambiar a put
+//	@GetMapping("/anuncio/{id}/finalizar-anuncio")
+//	public ResponseEntity<Anuncio> finalizarAnuncio(@PathVariable(value="id")int idAnuncio){
+//		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+//			if(anuncioRepository.existsById(idAnuncio)) {
+//				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, email));
+//			}
+//			else {
+//				throw new AnuncioIdNotFoundException(idAnuncio);
+//			}
+//		}
+//		else {
+//			return ResponseEntity.notFound().build(); 
+//		}
+//	}
 	
-	@GetMapping("/anuncio/{idAnuncio}/finalizar-anuncio/{emailSolicitante}")
-	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio, @PathVariable String emailSolicitante){
+//	@GetMapping("/anuncio/{idAnuncio}/finalizar-anuncio/{emailSolicitante}")
+//	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio, @PathVariable String emailSolicitante){
+//		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+//			if(anuncioRepository.existsById(idAnuncio)) {
+//				return ResponseEntity.ok(anuncioService.solicitanteAddAnuncio(idAnuncio, email, emailSolicitante));
+//			}
+//			else {
+//				throw new AnuncioIdNotFoundException(idAnuncio);
+//			}
+//		}
+//		else {
+//			return ResponseEntity.notFound().build(); 
+//		}
+//	}
+	
+	@PutMapping("/anuncio/{idAnuncio}/finalizar-anuncio")
+	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio
+			, @RequestParam String emailSolicitante, @RequestParam String textoComentario,
+			@RequestParam String puntuacionEstrellas){
+		System.out.println("Entrar esta entrando");
 		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 			if(anuncioRepository.existsById(idAnuncio)) {
-				return ResponseEntity.ok(anuncioService.solicitanteAddAnuncio(idAnuncio, email, emailSolicitante));
+				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, emailSolicitante, textoComentario, puntuacionEstrellas, email));
 			}
 			else {
 				throw new AnuncioIdNotFoundException(idAnuncio);
@@ -469,6 +488,7 @@ public class CurritoController {
 	public ResponseEntity<Anuncio> addAnuncioSolicitado(@RequestBody Anuncio anuncio){
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+				System.out.println("Aqui si llega para solicitarlo");
 				if(anuncioRepository.existsById(anuncio.getId())) {
 				
 					return new ResponseEntity<Anuncio>(anuncioService.addAnuncioSolicitado(email, anuncio), HttpStatus.CREATED);

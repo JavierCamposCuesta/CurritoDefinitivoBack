@@ -302,6 +302,7 @@ public class AnuncioService {
 		comentario.setPuntuacionEstrellas(puntuacionEstrellasDouble);
 		comentario.setFecha(LocalDate.now());
 		comentario.setRealizado(true);
+		comentario.setRealizaste(true);
 		
 		//Este comentario lo creamos y se rellenará cuando el solicitante decida rellenarlo, mientras
 		//no lo rellene aparecerá como pendiente
@@ -582,18 +583,9 @@ public class AnuncioService {
 		anuncioEditar.getListaSolicitantes().remove(solicitante);
 		anuncioRepository.save(anuncioEditar);
 				
-				
-				
-		
 	}
+	
 
-	
-	
-	
-	
-	
-	
-	
 
 	/**
 	 * Este metodo será para comprobar si algno de los resultados esta en favoritos, lo implementaremos más adelante

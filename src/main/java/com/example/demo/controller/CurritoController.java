@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +27,12 @@ import com.example.demo.error.AnuncioYaExistenteException;
 import com.example.demo.error.ApiError;
 import com.example.demo.error.CategoriaSinDatosException;
 import com.example.demo.error.CrearAnuncioException;
-import com.example.demo.error.LoginInvalidException;
 import com.example.demo.error.ParametrosInvalidosException;
 import com.example.demo.error.SolicitanteNoExisteEnAnuncioException;
 import com.example.demo.error.TokenInvalidException;
 import com.example.demo.error.UsuarioIdNotFoundException;
 import com.example.demo.model.Anuncio;
-import com.example.demo.model.Categoria;
+import com.example.demo.model.Comentario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.AnuncioRepository;
 import com.example.demo.repository.UsuarioRepository;
@@ -313,43 +310,70 @@ public class CurritoController {
 		
     }
 	
-//	/**
-//	 * Metodo para finalizar un anuncio, le pasamos el id del anuncio que vamos a finalizar
-//	 * @param idAnuncio
-//	 * @return El anuncio finalizado en caso que se realice la operacion, exepcion en caso que no exista el anuncio con ese id o el usuario no esté autorizado
-//	 */
-//	//Cambiar a put
-//	@GetMapping("/anuncio/{id}/finalizar-anuncio")
-//	public ResponseEntity<Anuncio> finalizarAnuncio(@PathVariable(value="id")int idAnuncio){
-//		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
-//			if(anuncioRepository.existsById(idAnuncio)) {
-//				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, email));
-//			}
-//			else {
-//				throw new AnuncioIdNotFoundException(idAnuncio);
-//			}
-//		}
-//		else {
-//			return ResponseEntity.notFound().build(); 
-//		}
-//	}
+	/**
+	 * Metodo que devuelve todos los anuncios que hay en la lista ListaRealizados
+	 * @return lista o exepcion en caso de token invalido
+	 */
+	@GetMapping("profile/opiniones")
+    public ResponseEntity<List<Comentario>> mostrarOpiniones(){
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(email != null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+			return ResponseEntity.ok(usuarioService.mostrarOpiniones(email));
+		}
+		else {
+			throw new TokenInvalidException();
+		}
+		
+    }
 	
-//	@GetMapping("/anuncio/{idAnuncio}/finalizar-anuncio/{emailSolicitante}")
-//	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio, @PathVariable String emailSolicitante){
-//		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
-//			if(anuncioRepository.existsById(idAnuncio)) {
-//				return ResponseEntity.ok(anuncioService.solicitanteAddAnuncio(idAnuncio, email, emailSolicitante));
-//			}
-//			else {
-//				throw new AnuncioIdNotFoundException(idAnuncio);
-//			}
-//		}
-//		else {
-//			return ResponseEntity.notFound().build(); 
-//		}
-//	}
+	/**
+	 * Metodo que devuelve todas las notificaciones de un usuario
+	 * @return lista o exepcion en caso de token invalido
+	 */
+	@GetMapping("profile/notification")
+    public ResponseEntity<List<Comentario>> mostrarNotificaciones(){
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(email != null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+			return ResponseEntity.ok(usuarioService.mostrarNotificaciones(email));
+		}
+		else {
+			throw new TokenInvalidException();
+		}
+		
+    }
+	
+	/**
+	 * Metodo que devuelve todas las opiniones pendientes de un usuario
+	 * @return lista o exepcion en caso de token invalido
+	 */
+	@GetMapping("profile/opiniones-pendientes")
+    public ResponseEntity<List<Comentario>> mostrarOpinionesPendientes(){
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(email != null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+			return ResponseEntity.ok(usuarioService.mostrarOpinionesPendientes(email));
+		}
+		else {
+			throw new TokenInvalidException();
+		}
+		
+    }
+	
+	/**
+	 * Metodo para añadir una nueva valoracion de solicitante a ofertante
+	 * @return opinion o exepcion en caso de token invalido
+	 */
+	@PutMapping("profile/nuevo-comentario")
+    public ResponseEntity<Comentario> subirComentario(@RequestParam String idComentario, @RequestParam String textoComentario,
+    		@RequestParam String puntuacionEstrellas){
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(email != null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
+			return ResponseEntity.ok(usuarioService.subirComentario(idComentario, textoComentario, puntuacionEstrellas));
+		}
+		else {
+			throw new TokenInvalidException();
+		}
+		
+    }
 	
 	@PutMapping("/anuncio/{idAnuncio}/finalizar-anuncio")
 	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio

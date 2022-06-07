@@ -2,10 +2,9 @@ package com.example.demo.controller;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-
 import java.util.Map;
 
-import javax.transaction.Transactional;
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +28,7 @@ import com.example.demo.model.LoginCredentials;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.JWTUtil;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.UsuarioService;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -40,6 +40,7 @@ public class AuthController {
     @Autowired private JWTUtil jwtUtil;
     @Autowired private AuthenticationManager authManager;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private EmailService emailService;
     
     @Autowired
 	private UsuarioService usuarioService;
@@ -101,6 +102,19 @@ public class AuthController {
 			return ResponseEntity.ok(false);
 		}
 		
+    }
+	
+	/**
+     * Este metodo envia un codigo de verificacion al correo del usuario que se intenta registrar
+     * @param email Email del usuario que intenta registrarse
+     * @return CodVerificacion que se genera
+     * @throws MessagingException
+     */
+    @PostMapping("verification")
+    public ResponseEntity<Integer> emailVerify(@RequestBody String email) throws MessagingException{
+    	
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.emailService.enviarCodVerificacion(email));
+    	
     }
 	
 	/**

@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -75,10 +78,21 @@ public class AnuncioService {
 //		
 //	}
 	
+	/**
+	 * Metodo para añadir un anuncio pasandole una foto
+	 * @param email
+	 * @param titulo
+	 * @param categoria
+	 * @param precio
+	 * @param tipoPrecio
+	 * @param descripcion
+	 * @param ubicacion
+	 * @param file
+	 * @return
+	 */
 	public Anuncio addAnuncioCompleto(String email, String titulo, String categoria, String precio, String tipoPrecio,
 			String descripcion, String ubicacion, MultipartFile file) {
 		Double convertPrecio = Double.parseDouble(precio);
-		System.out.println("Aqui llega");
 		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
 			throw new CrearAnuncioException();
 		}
@@ -99,6 +113,52 @@ public class AnuncioService {
 		} catch (IOException e) {
 			throw new CrearAnuncioException();
 		}
+		
+		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+		Categoria categoriaNueva = categoriaRepository.findById(categoria).orElse(null);
+		categoriaNueva.getListaAnuncios().add(nuevoAnuncio);
+		usuario.getListaOfertados().add(nuevoAnuncio);
+		nuevoAnuncio.setAutorAnuncio(usuario);
+		anuncioRepository.save(nuevoAnuncio);
+		categoriaRepository.save(categoriaNueva);
+		usuarioRepository.save(usuario);
+		return nuevoAnuncio;
+		}
+	}
+	
+	/**
+	 * Metodo para añadir un anuncio sin foto, le añadimos una foto por defecto
+	 * @param email
+	 * @param titulo
+	 * @param categoria
+	 * @param precio
+	 * @param tipoPrecio
+	 * @param descripcion
+	 * @param ubicacion
+	 * @param file
+	 * @return
+	 */
+	public Anuncio addAnuncioCompletoSinFoto(String email, String titulo, String categoria, String precio, String tipoPrecio,
+			String descripcion, String ubicacion) {
+		Double convertPrecio = Double.parseDouble(precio);
+		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
+			throw new CrearAnuncioException();
+		}
+		else {
+		Anuncio nuevoAnuncio = new Anuncio(titulo, categoria, convertPrecio, tipoPrecio, descripcion, ubicacion);
+		nuevoAnuncio.setFechaAnuncio(LocalDateTime.now());
+		nuevoAnuncio.setUbicacion(ubicacion);
+		
+		
+		try {
+			byte[] imagenDefault = Files.readAllBytes(Paths.get("src/main/resources/static/img/default.png"));
+			nuevoAnuncio.setFile(imagenDefault);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+			
 		
 		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
 		Categoria categoriaNueva = categoriaRepository.findById(categoria).orElse(null);
@@ -151,31 +211,36 @@ public class AnuncioService {
 		
 	}
 	
-//	/**
-//	 * Metodo para editar un anuncio, le pasamos un id y un anuncio nuevo para editar los cambios
-//	 * @param id
-//	 * @param anuncio
-//	 * @return el nuevo anuncio ya editado
-//	 */
-//	public Anuncio editAnuncio(int id, Anuncio anuncio) {
-////		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
-////		nuevoAnuncio.setFechaAnuncio(LocalDate.now());
-//		if(anuncio.getTitulo().isBlank() || anuncio.getTitulo() == null || anuncio.getPrecio() < 0 ) {
-//			throw new CrearAnuncioException();
-//		}
-//		else {
-//		Anuncio anuncioEditar = anuncioRepository.getById(id);
-//		anuncioEditar.setTitulo(anuncio.getTitulo());
-//		anuncioEditar.setCategoria(anuncio.getCategoria());
-//		anuncioEditar.setPrecio(anuncio.getPrecio());
-//		anuncioEditar.setTipoPrecio(anuncio.getTipoPrecio());
-//		anuncioEditar.setDescripcion(anuncio.getDescripcion());
-//		
-//		anuncioRepository.save(anuncioEditar);
-//		return anuncioEditar;
-//		}
-//		
-//	}
+	/**
+	 * Metodo para editar un anuncio, le pasamos un id y un anuncio nuevo para editar los cambios
+	 * @param id
+	 * @param anuncio
+	 * @return el nuevo anuncio ya editado
+	 */
+	public Anuncio editAnuncioNoImage(int id, String email, String titulo, String categoria, String precio, String tipoPrecio,
+			String descripcion, String ubicacion) {
+//		Anuncio nuevoAnuncio = new Anuncio(anuncio.getTitulo(), anuncio.getCategoria(), anuncio.getPrecio(), anuncio.getTipoPrecio(), anuncio.getDescripcion());
+//		nuevoAnuncio.setFechaAnuncio(LocalDate.now());
+		Double convertPrecio = Double.parseDouble(precio);
+		if(titulo.isBlank() || titulo == null || convertPrecio < 0 ) {
+			throw new CrearAnuncioException();
+		}
+		else {
+		Anuncio anuncioEditar = anuncioRepository.getById(id);
+		anuncioEditar.setTitulo(titulo);
+		anuncioEditar.setCategoria(categoria);
+		anuncioEditar.setPrecio(convertPrecio);
+		anuncioEditar.setTipoPrecio(tipoPrecio);
+		anuncioEditar.setDescripcion(descripcion);
+		anuncioEditar.setUbicacion(ubicacion);
+		
+		
+		anuncioRepository.save(anuncioEditar);
+		return anuncioEditar;
+		}
+		
+	}
+	
 
 	/**
 	 * Este método sirve para borrar un anuncio, para ello tenemos que eliminar el anuncio en cascada de la lista de categoria y de la lista de ofertados
@@ -206,54 +271,6 @@ public class AnuncioService {
 		
 	}
 
-//	/**
-//	 * metodo para marcar un anuncio como finalizado
-//	 * @param idAnuncio
-//	 * @param email
-//	 * @return el anuncio que se ha finalizado
-//	 */
-//	public Anuncio finalizarAnuncio(int idAnuncio, String email) {
-//		Anuncio anuncioBorrar = anuncioRepository.getById(idAnuncio);
-//		
-//		if(usuarioRepository.findByEmail(email).orElse(null).getListaOfertados().contains(anuncioBorrar)) {
-//		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-//		usuario.getListaOfertados().remove(anuncioBorrar);
-//		
-//		anuncioBorrar.setFechaFin(LocalDateTime.now());
-//		
-//		anuncioBorrar.setFinalizado(true);
-//		
-//		usuario.getListaTerminados().add(anuncioBorrar);
-//		
-//		usuarioRepository.save(usuario);
-//		return anuncioBorrar;
-//		}
-//		else {
-//			throw new AnuncioIdNoEstaEnListaExcetion(idAnuncio);
-//		}
-//
-//		
-//	}
-//	
-//	
-//	public Anuncio solicitanteAddAnuncio(int idAnuncio, String email, String emailSolicitante) {
-//		Anuncio anuncioAdd = anuncioRepository.getById(idAnuncio);
-//		System.out.println(emailSolicitante);
-////		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-//		Usuario solicitante = usuarioRepository.findByEmail(emailSolicitante).orElse(null);
-//		System.out.println(solicitante.getNombre());
-////		usuario.getListaOfertados().remove(anuncioBorrar);
-//		solicitante.getListaDemandados().remove(anuncioAdd);
-//		solicitante.getListaRealizados().add(anuncioAdd);
-//		
-//		
-//		
-//		
-//		usuarioRepository.save(solicitante);
-//		return anuncioAdd;
-//		
-//		
-//	}
 	
 	/**
 	 * metodo para marcar un anuncio como finalizado, para ello se realizan diferentes operacion
@@ -325,6 +342,11 @@ public class AnuncioService {
 		
 	}
 
+	/**
+	 * Metodo para mostrar los solicitantes de un anuncio el cual recibimos su id
+	 * @param idAnuncio
+	 * @return
+	 */
 	public List<Usuario> mostrarSolicitantesAnuncio(int idAnuncio) {
 		List<Usuario> listaSolicitantesAnuncio = anuncioRepository.getById(idAnuncio).getListaSolicitantes();
 		return listaSolicitantesAnuncio;
@@ -587,22 +609,4 @@ public class AnuncioService {
 	
 
 
-	/**
-	 * Este metodo será para comprobar si algno de los resultados esta en favoritos, lo implementaremos más adelante
-	 */
-	
-//	public List<Anuncio> modificarListaResultado(String email, List<Anuncio> mostrarAnunciosPorFiltro) {
-//		Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-//		List<Anuncio> listaAnunciosConFavoritos = mostrarAnunciosPorFiltro;
-//		for(int i = 0 ; i<mostrarAnunciosPorFiltro.size(); i++) {
-//			for(int j = 0 ; j<usuario.getListaFavoritos().size(); j++) {
-//				if(mostrarAnunciosPorFiltro.get(i) == usuario.getListaFavoritos().get(j)) {
-//					listaAnunciosConFavoritos.get(i).setEnFavoritos(true);
-//				}
-//			}
-//			}
-//		
-//		
-//		return listaAnunciosConFavoritos;
-//	}
 }

@@ -62,7 +62,6 @@ public class Anuncio {
 	private String tipoPrecio;
 	private String ubicacion;
 	
-	private boolean enFavoritos = false;
 	
 
 	
@@ -115,16 +114,6 @@ public class Anuncio {
 		this.descripcion = descripcion;
 	}
 
-	
-//	public List<String> getListaImagenes() {
-//		return listaImagenes;
-//	}
-//
-//	public void setListaImagenes(List<String> listaImagenes) {
-//		this.listaImagenes = listaImagenes;
-//	}
-
-	
 
 	public String getCategoria() {
 		return categoria;
@@ -206,40 +195,8 @@ public class Anuncio {
 		this.ubicacion = ubicacion;
 	}
 
-	public boolean isEnFavoritos() {
-		return enFavoritos;
-	}
-
-	public void setEnFavoritos(boolean enFavoritos) {
-		this.enFavoritos = enFavoritos;
-	}
-	
 	
 
-
-	
-	
-	
-	
-	
-	
-
-//	@Override
-//	public int hashCode() {
-//		return Objects.hash(id);
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		Anuncio other = (Anuncio) obj;
-//		return id == other.id;
-//	}
 	
 	
 	

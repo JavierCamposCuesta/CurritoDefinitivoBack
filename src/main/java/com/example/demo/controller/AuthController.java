@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -12,18 +15,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.error.AnuncioIdNotFoundException;
 import com.example.demo.error.ApiError;
 import com.example.demo.error.EmailEnUsoException;
 import com.example.demo.error.EmailNotFoundException;
 import com.example.demo.error.LoginInvalidException;
+import com.example.demo.error.TokenInvalidException;
+import com.example.demo.error.UsuarioIdNotFoundException;
+import com.example.demo.model.Anuncio;
 import com.example.demo.model.LoginCredentials;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
@@ -31,8 +42,8 @@ import com.example.demo.security.JWTUtil;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.UsuarioService;
 
-//@CrossOrigin(origins = "http://localhost:4200")
-@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
+@CrossOrigin(origins = {"http://localhost:4200", "https://javiercamposcuesta.github.io"})
+//@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @RestController
 public class AuthController {
 	
@@ -45,6 +56,7 @@ public class AuthController {
     @Autowired
 	private UsuarioService usuarioService;
     
+    
     /**
      * Metodo para registrar usuarios
      * @param user
@@ -55,6 +67,7 @@ public class AuthController {
     	if(usuarioRepository.findByEmail(user.getEmail()).orElse(null)==null) {
     		String encodedPass = passwordEncoder.encode(user.getPassword());
     		user.setPassword(encodedPass);
+
     		user = usuarioRepository.save(user);
     		String token = jwtUtil.generateToken(user.getEmail());
     		return Collections.singletonMap("jwt_token", token);
@@ -116,7 +129,50 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(this.emailService.enviarCodVerificacion(email));
     	
     }
+    
+    /**
+	 * Este metodo recibe unos parámetros para actualizar la contraseña
+	 * 
+	 * @return usuarioEditado
+	 */
+	@PutMapping("/profile/updatePass")
+	public ResponseEntity<Usuario> updatePass(@RequestParam String passwordOld,@RequestParam String passwordNew,
+			@RequestParam String passwordNew2) {
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (email != null && usuarioRepository.findByEmail(email).orElse(null) != null) {
+			try {
+	            UsernamePasswordAuthenticationToken authInputToken =
+	                    new UsernamePasswordAuthenticationToken(email, passwordOld);
+
+	            authManager.authenticate(authInputToken);
+
+	            return new ResponseEntity<Usuario>(usuarioService.editPass(passwordNew, passwordNew2, email), HttpStatus.CREATED);
+	        }catch (AuthenticationException authExc){
+	        	//nota cambiar exception
+	        	throw new LoginInvalidException();
+	        }
+				
+			
+		} else {
+			throw new TokenInvalidException();
+		}
+	}
 	
+	/**
+	 * Metodo para buscar un usuario a traves de un id que recibimos como parámetro
+	 * @param idProfile
+	 * @return Usuario en caso de encontrarlo
+	 */
+	@GetMapping("/usuario/{id}")
+	public ResponseEntity<Usuario> mostrarAnuncio(@PathVariable(value="id")int idProfile){
+			
+			if( usuarioRepository.existsById(idProfile)) {
+				return ResponseEntity.ok(usuarioService.mostrarUsuario(idProfile));
+			}
+			else {
+				throw new UsuarioIdNotFoundException(idProfile);
+			}
+				}
 	/**
 	 * Metodo para mostrar la exepcion de Login invalid
 	 * @param ex

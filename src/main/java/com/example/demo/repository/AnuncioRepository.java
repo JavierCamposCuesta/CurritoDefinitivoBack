@@ -27,10 +27,10 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Integer>{
     
     //########## Consultas busqueda por termino
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio desc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1% OR UPPER(anuncio.categoria) LIKE %?1%) order by fecha_anuncio desc")
     List<Anuncio> getAnunciosPorTerminoNovedades(String termino);
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio asc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1% OR UPPER(anuncio.categoria) LIKE %?1%) order by precio asc")
     List<Anuncio> getAnunciosPorTerminoPrecioAscendente(String termino);
     
     @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio desc")

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /*
  * Clase usuario
+ * @author javier
  */
 @Entity
 @Table(name = "usuarioTable")
@@ -39,6 +40,7 @@ public class Usuario {
 	private String telefono;
 	private LocalDate fechaNacimiento;
 	private String ubicacion;
+	private byte[] fotoPerfil;
 	
 	//Valoraciones
 	private int totalPuntuacion = 0;
@@ -75,22 +77,7 @@ public class Usuario {
 	@JsonIgnore
 	private List<Anuncio>listaRealizados = new ArrayList<Anuncio>();
 	
-//	@OneToMany(
-//			cascade = CascadeType.ALL, orphanRemoval = true
-//			)
-//	@JsonIgnore
-//	private List<Comentario>comentariosPendientes = new ArrayList<>();
-//	
-//	@OneToMany(
-////			cascade = CascadeType.ALL, 
-//			orphanRemoval = true
-//			)
-//	@JsonIgnore
-//	private List<Comentario>listaComentarios = new ArrayList<>();
 	
-	
-//	private List<Chat>listaChats = new ArrayList<Chat>();
-	private String fotoPerfil;
 	
 	public Usuario() {
 		
@@ -227,11 +214,11 @@ public class Usuario {
 
 
 
-	public String getFotoPerfil() {
+	public byte[] getFotoPerfil() {
 		return fotoPerfil;
 	}
 
-	public void setFotoPerfil(String fotoPerfil) {
+	public void setFotoPerfil(byte[] fotoPerfil) {
 		this.fotoPerfil = fotoPerfil;
 	}
 

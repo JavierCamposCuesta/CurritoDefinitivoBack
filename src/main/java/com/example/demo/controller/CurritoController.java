@@ -45,8 +45,8 @@ import com.example.demo.service.UsuarioService;
  * @author javier
  *
  */
-//@CrossOrigin(origins = "http://localhost:4200")
-@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
+@CrossOrigin(origins = {"http://localhost:4200", "https://javiercamposcuesta.github.io"})
+//@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @RestController
 public class CurritoController {
 	
@@ -102,38 +102,19 @@ public class CurritoController {
         }
     }
 	
-	
-	
 	/**
-	 * Este método recibe un objeto de tipo anuncio como parámetro y añade el anuncio donde corresponde
-	 * @param anuncio
-	 * @return anuncio en caso que se haya añadido el anuncio, notFound en caso de que el usuario no esté logueado
-	 * y error correspondiente en caso de que no se pueda crear debido a campos invalidos
+	 * Este método recibe los parámetros de anuncio, comprueba si file es o no nulo y crea un anuncio 
+	 * @param file es opcional
+	 * @param titulo
+	 * @param categoria
+	 * @param precio
+	 * @param tipoPrecio
+	 * @param descripcion
+	 * @param ubicacion
+	 * @return el anuncio que ha creado
 	 */
-//	@PostMapping("/anuncio")
-//	public ResponseEntity<Anuncio> addCurrito(@RequestParam MultipartFile file
-//			, @RequestParam String titulo, @RequestParam String categoria,
-//			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion
-//			){
-//		System.out.println("fdsfdsf1");
-//		System.out.println(titulo);
-//		System.out.println(file.getOriginalFilename());
-//		
-//			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
-//				
-//			
-//				//	return new ResponseEntity<Anuncio>(anuncioService.addAnuncio(email, anuncio), HttpStatus.CREATED);
-//				return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
-//
-//			}
-//			else {
-//				throw new TokenInvalidException();
-//			}
-//				}
-	
 	@PostMapping("/anuncio")
-	public ResponseEntity<Anuncio> addCurrito(@RequestParam MultipartFile file
+	public ResponseEntity<Anuncio> addCurrito(@RequestParam(required=false) MultipartFile file
 			, @RequestParam String titulo, @RequestParam String categoria,
 			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion
 			){
@@ -141,8 +122,14 @@ public class CurritoController {
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 				
-			
-					return new ResponseEntity<Anuncio>(anuncioService.addAnuncioCompleto(email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
+			if(file!=null) {
+				return new ResponseEntity<Anuncio>(anuncioService.addAnuncioCompleto(email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
+
+			}
+			else {
+				return new ResponseEntity<Anuncio>(anuncioService.addAnuncioCompletoSinFoto(email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion), HttpStatus.CREATED);
+
+			}
 				//return new ResponseEntity<Anuncio>(HttpStatus.CREATED);
 
 			}
@@ -151,8 +138,9 @@ public class CurritoController {
 			}
 				}
 	
+	
 	/**
-	 * Este método devolverá un anuncio por id, en caso de no existir el anuncio con ese id devolverá la exepcion correspondiente
+	 * Este método devolverá un usuario por id
 	 * @param idAnuncio
 	 * @return anuncio
 	 */
@@ -167,6 +155,8 @@ public class CurritoController {
 			}
 				}
 	
+	
+	
 	/**
 	 * Método para actualizar anuncios, recibe un id de anuncio y un anuncio, en caso que el anuncio exista cambia los valores
 	 * del antiguo anuncio por los del nuevo
@@ -175,7 +165,7 @@ public class CurritoController {
 	 * @return Anuncio modificado en caso de que todo haya ido bien, error en caso de que no exista el anuncio o no este correctamente logueado
 	 */
 	@PutMapping("/anuncio/{id}")
-	public ResponseEntity<Anuncio> editCurrito(@RequestParam MultipartFile file
+	public ResponseEntity<Anuncio> editCurrito(@RequestParam(required=false) MultipartFile file
 			, @RequestParam String titulo, @RequestParam String categoria,
 			@RequestParam String precio, @RequestParam String tipoPrecio, @RequestParam String descripcion, @RequestParam String ubicacion,
 			@PathVariable(value="id")int idAnuncio){
@@ -183,8 +173,13 @@ public class CurritoController {
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && anuncioRepository.getById(idAnuncio)!= null) {
 				if(anuncioRepository.existsById(idAnuncio)) {
-					
-					return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
+					if(file!=null) {
+						return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion, file), HttpStatus.CREATED);
+					}
+					else {
+						return new ResponseEntity<Anuncio>(anuncioService.editAnuncioNoImage(idAnuncio, email, titulo, categoria, precio, tipoPrecio, descripcion, ubicacion), HttpStatus.CREATED);
+
+					}
 				}
 				else {
 					throw new AnuncioIdNotFoundException(idAnuncio);
@@ -195,29 +190,6 @@ public class CurritoController {
 			}
 				}
 	
-//	/**
-//	 * Método para actualizar anuncios, recibe un id de anuncio y un anuncio, en caso que el anuncio exista cambia los valores
-//	 * del antiguo anuncio por los del nuevo
-//	 * @param anuncio
-//	 * @param idAnuncio
-//	 * @return Anuncio modificado en caso de que todo haya ido bien, error en caso de que no exista el anuncio o no este correctamente logueado
-//	 */
-//	@PutMapping("/anuncio/{id}")
-//	public ResponseEntity<Anuncio> editCurrito(@RequestBody Anuncio anuncio, @PathVariable(value="id")int idAnuncio){
-//			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//			if(email!=null && anuncioRepository.getById(idAnuncio)!= null) {
-//				if(anuncioRepository.existsById(idAnuncio)) {
-//					
-//					return new ResponseEntity<Anuncio>(anuncioService.editAnuncio(idAnuncio, anuncio), HttpStatus.CREATED);
-//				}
-//				else {
-//					throw new AnuncioIdNotFoundException(idAnuncio);
-//				}
-//			}
-//			else {
-//				throw new TokenInvalidException();
-//			}
-//				}
 	
 	
 	
@@ -245,6 +217,38 @@ public class CurritoController {
 				throw new TokenInvalidException();
 			}
 				}
+	
+	/**
+	 * Metodo para consultar los anuncios ofertados de un usuario, recibimos el id del usuario que queremos consultar como parametro
+	 * @param idProfile
+	 * @return lista de anuncios de ese usuario
+	 */
+	@GetMapping("/usuario/{id}/anuncios-ofertados")
+	public ResponseEntity<List<Anuncio>> mostrarAnunciosOfertadosUsuario(@PathVariable(value="id")int idProfile){
+			
+			if( usuarioRepository.existsById(idProfile)) {
+				return ResponseEntity.ok(usuarioService.mostrarAnunciosOfertadosUsuario(idProfile));
+			}
+			else {
+				throw new UsuarioIdNotFoundException(idProfile);
+			}
+				}
+	
+	/**
+	 * Metodo que devuelve todos las opiniones de un usuario
+	 * @return lista o exepcion en caso de token invalido
+	 */
+	@GetMapping("usuario/{id}/opiniones")
+    public ResponseEntity<List<Comentario>> mostrarOpinionesUsuario(@PathVariable(value="id")int idProfile){
+		
+		if( usuarioRepository.existsById(idProfile)) {
+			return ResponseEntity.ok(usuarioService.mostrarOpinionesUsuario(idProfile));
+		}
+		else {
+			throw new UsuarioIdNotFoundException(idProfile);
+		}
+		
+    }
 	
 	/**
 	 * Metodo que devuelve todos los anuncios que hay en la lista ListaOfertados
@@ -311,7 +315,7 @@ public class CurritoController {
     }
 	
 	/**
-	 * Metodo que devuelve todos los anuncios que hay en la lista ListaRealizados
+	 * Metodo que devuelve todos las opiniones de un usuario
 	 * @return lista o exepcion en caso de token invalido
 	 */
 	@GetMapping("profile/opiniones")
@@ -379,7 +383,6 @@ public class CurritoController {
 	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio
 			, @RequestParam String emailSolicitante, @RequestParam String textoComentario,
 			@RequestParam String puntuacionEstrellas){
-		System.out.println("Entrar esta entrando");
 		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 			if(anuncioRepository.existsById(idAnuncio)) {
@@ -512,7 +515,6 @@ public class CurritoController {
 	public ResponseEntity<Anuncio> addAnuncioSolicitado(@RequestBody Anuncio anuncio){
 			String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
-				System.out.println("Aqui si llega para solicitarlo");
 				if(anuncioRepository.existsById(anuncio.getId())) {
 				
 					return new ResponseEntity<Anuncio>(anuncioService.addAnuncioSolicitado(email, anuncio), HttpStatus.CREATED);
@@ -619,6 +621,52 @@ public class CurritoController {
 		}
 		
     }
+	
+	/**
+	 * Este metodo recibe unos parámetros para actualizar el perfil cuando se le envia una nueva foto de perfil
+	 * 
+	 * @return usuarioEditado
+	 */
+	@PutMapping("/profile/update")
+	public ResponseEntity<Usuario> editProfile(@RequestParam(required=false) MultipartFile imagenProfile, @RequestParam String nombre,
+			@RequestParam String apellidos, @RequestParam String telefono, @RequestParam String ubicacion) {
+		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (email != null && usuarioRepository.findByEmail(email).orElse(null) != null) {
+			if(imagenProfile != null) {
+				return new ResponseEntity<Usuario>(usuarioService.editProfile(imagenProfile, nombre, apellidos, telefono,
+						ubicacion, email), HttpStatus.CREATED);
+				
+			}
+			else {
+				return new ResponseEntity<Usuario>(usuarioService.editProfileNoImg( nombre, apellidos, telefono,
+						ubicacion, email), HttpStatus.CREATED);
+			}
+			
+		} else {
+			throw new TokenInvalidException();
+		}
+	}
+	
+	
+	
+//	/**
+//	 * Este metodo recibe unos parámetros para actualizar el perfil cuando no se le envia una nueva foto de perfil
+//	 * 
+//	 * @return usuarioEditado
+//	 */
+//	@PutMapping("/profile/updateDefaultImage")
+//	public ResponseEntity<Usuario> editProfile(@RequestParam String imagenProfile,@RequestParam String nombre,
+//			@RequestParam String apellidos, @RequestParam String telefono, @RequestParam String ubicacion) {
+//		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		if (email != null && usuarioRepository.findByEmail(email).orElse(null) != null) {
+//
+//				return new ResponseEntity<Usuario>(usuarioService.editProfileNoImg( nombre, apellidos, telefono,
+//						ubicacion, email), HttpStatus.CREATED);
+//			
+//		} else {
+//			throw new TokenInvalidException();
+//		}
+//	}
 	
 	
 	

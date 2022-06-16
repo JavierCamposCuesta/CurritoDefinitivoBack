@@ -14,6 +14,12 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender emailSender;
 	
+	/**
+	 * Metodo para enviar un correo de verificacion, en el creamos un codigo de 4 dígitos que será con el que tendrá que validar su email
+	 * @param destinatario
+	 * @return
+	 * @throws MessagingException
+	 */
 	public int enviarCodVerificacion(String destinatario) throws MessagingException{
 		MimeMessage mensaje = emailSender.createMimeMessage();
 		MimeMessageHelper helper;
@@ -27,8 +33,6 @@ public class EmailService {
 		helper.setSubject("Verifica tu correo");
 		helper.setTo(destinatario);
 		helper.setText("¡Activa tu cuenta en Curritos!, el código de verificación es: " + codVerificacion,true);
-		
-	
 		
 		emailSender.send(mensaje);
 		return codVerificacion;

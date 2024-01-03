@@ -45,7 +45,7 @@ import com.example.demo.service.UsuarioService;
  * @author javier
  *
  */
-@CrossOrigin(origins = {"http://localhost:4200", "https://javiercamposcuesta.github.io"})
+@CrossOrigin
 //@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @RestController
 public class CurritoController {
@@ -379,21 +379,31 @@ public class CurritoController {
 		
     }
 	
-	@PutMapping("/anuncio/{idAnuncio}/finalizar-anuncio")
-	public ResponseEntity<Anuncio> solicitanteAddAnuncio(@PathVariable int idAnuncio
+	/**
+	 * Metodo para marcar un anuncio como finalizado, recibirá también los parámetros del comentario que el ofertante le realiza
+	 * al usuario que ha realizado el currito
+	 * @param idAnuncio
+	 * @param emailSolicitante
+	 * @param textoComentario
+	 * @param puntuacionEstrellas
+	 * @return Anuncio
+	 */
+	@PostMapping("/anuncio/{idAnuncio}/finalizar-anuncio")
+	public ResponseEntity<Anuncio> finalizarAnuncio(@PathVariable int idAnuncio
 			, @RequestParam String emailSolicitante, @RequestParam String textoComentario,
 			@RequestParam String puntuacionEstrellas){
 		String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if(email!=null && usuarioRepository.findByEmail(email).orElse(null)!=null) {
 			if(anuncioRepository.existsById(idAnuncio)) {
-				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, emailSolicitante, textoComentario, puntuacionEstrellas, email));
+				return ResponseEntity.ok(anuncioService.finalizarAnuncio(idAnuncio, emailSolicitante, 
+						textoComentario, puntuacionEstrellas, email));
 			}
 			else {
 				throw new AnuncioIdNotFoundException(idAnuncio);
 			}
 		}
 		else {
-			return ResponseEntity.notFound().build(); 
+			throw new TokenInvalidException();
 		}
 	}
 	

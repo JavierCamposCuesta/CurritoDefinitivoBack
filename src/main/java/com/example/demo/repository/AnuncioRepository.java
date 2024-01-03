@@ -27,61 +27,61 @@ public interface AnuncioRepository extends JpaRepository<Anuncio, Integer>{
     
     //########## Consultas busqueda por termino
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio desc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1% OR UPPER(anuncio.categoria) LIKE %?1%) order by fecha_anuncio desc")
     List<Anuncio> getAnunciosPorTerminoNovedades(String termino);
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio asc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1% OR UPPER(anuncio.categoria) LIKE %?1%) order by precio asc")
     List<Anuncio> getAnunciosPorTerminoPrecioAscendente(String termino);
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio desc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio desc")
     List<Anuncio> getAnunciosPorTerminoPrecioDescendente(String termino);
     
-    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio asc")
+    @Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio asc")
     List<Anuncio> getAnunciosPorTerminoAntiguos(String termino);
 
     
     //########### Consultas busqueda por categorias
     
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio desc")
     List<Anuncio> getAnunciosPorCategoriaNovedades(String termino, String categoria);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio asc")
     List<Anuncio> getAnunciosPorCategoriaPrecioAscendente(String termino, String categoria);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio desc")
     List<Anuncio> getAnunciosPorCategoriaPrecioDescendente(String termino, String categoria);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio asc")
     List<Anuncio> getAnunciosPorCategoriaAntiguos(String termino, String categoria);
 	
 	
 	//############ Consultas busqueda por precio
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio desc")
     List<Anuncio> getAnunciosPorPrecioNovedades(String termino, int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio asc")
     List<Anuncio> getAnunciosPorPrecioAscendente(String termino, int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio desc")
     List<Anuncio> getAnunciosPorPrecioDescendiente(String termino, int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.precio >= ?2 AND anuncio.precio <= ?3  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio asc")
     List<Anuncio> getAnunciosPorPrecioAntiguos(String termino, int precioMin, int precioMax);
 	
 	
 	//############ Consultas busqueda por categoria y precio
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio desc")
     List<Anuncio> getAnunciosPorCategoriaPrecioNovedades(String termino, String categoria,  int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio asc")
     List<Anuncio> getAnunciosPorCategoriaPrecioAscendente(String termino, String categoria,  int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by precio desc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by precio desc")
     List<Anuncio> getAnunciosPorCategoriaPrecioDescendente(String termino, String categoria,  int precioMin, int precioMax);
 	
-	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (anuncio.titulo LIKE %?1% OR anuncio.descripcion LIKE %?1%) order by fecha_anuncio asc")
+	@Query(nativeQuery = true,value = "select * from anuncio where anuncio.finalizado = false AND anuncio.categoria = ?2 AND anuncio.precio >= ?3 AND anuncio.precio <= ?4  AND (UPPER(anuncio.titulo) LIKE %?1% OR UPPER(anuncio.descripcion) LIKE %?1%) order by fecha_anuncio asc")
     List<Anuncio> getAnunciosPorCategoriaPrecioAntiguos(String termino, String categoria,  int precioMin, int precioMax);
 
 	

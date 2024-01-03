@@ -10,7 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,8 +20,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /*
  * Clase usuario
+ * @author javier
  */
 @Entity
+@Table(name = "usuarioTable")
 public class Usuario {
 	
 	@Id
@@ -36,8 +40,14 @@ public class Usuario {
 	private String telefono;
 	private LocalDate fechaNacimiento;
 	private String ubicacion;
+	private byte[] fotoPerfil;
 	
-	@OneToMany(
+	//Valoraciones
+	private int totalPuntuacion = 0;
+	private int numeroValoraciones = 0;
+	private double puntuacionMedia = 0;
+	
+	@ManyToMany(
 //			cascade = CascadeType.ALL, orphanRemoval = true
 			)
 	@JsonIgnore
@@ -55,7 +65,7 @@ public class Usuario {
 	@JsonIgnore
 	private List<Anuncio>listaTerminados = new ArrayList<Anuncio>();
 	
-	@OneToMany(
+	@ManyToMany(
 //			cascade = CascadeType.ALL
 			)
 	@JsonIgnore
@@ -67,30 +77,15 @@ public class Usuario {
 	@JsonIgnore
 	private List<Anuncio>listaRealizados = new ArrayList<Anuncio>();
 	
-	@OneToMany(
-			cascade = CascadeType.ALL, orphanRemoval = true
-			)
-	@JsonIgnore
-	private List<Comentario>comentariosPendientes = new ArrayList<>();
 	
-	@OneToMany(
-//			cascade = CascadeType.ALL, 
-			orphanRemoval = true
-			)
-	@JsonIgnore
-	private List<Comentario>listaComentarios = new ArrayList<>();
-	
-	
-//	private List<Chat>listaChats = new ArrayList<Chat>();
-	private String fotoPerfil;
 	
 	public Usuario() {
 		
 	}
 	
-public Usuario(int id) {
-		this.id = id;
-	}
+	public Usuario(int id) {
+			this.id = id;
+		}
 
 	
 
@@ -219,11 +214,11 @@ public Usuario(int id) {
 
 
 
-	public String getFotoPerfil() {
+	public byte[] getFotoPerfil() {
 		return fotoPerfil;
 	}
 
-	public void setFotoPerfil(String fotoPerfil) {
+	public void setFotoPerfil(byte[] fotoPerfil) {
 		this.fotoPerfil = fotoPerfil;
 	}
 
@@ -253,29 +248,56 @@ public Usuario(int id) {
 
 
 
-	public List<Comentario> getComentariosPendientes() {
-		return comentariosPendientes;
+//	public List<Comentario> getComentariosPendientes() {
+//		return comentariosPendientes;
+//	}
+//
+//
+//
+//	public void setComentariosPendientes(List<Comentario> comentariosPendientes) {
+//		this.comentariosPendientes = comentariosPendientes;
+//	}
+//
+//
+//
+//	public List<Comentario> getListaComentarios() {
+//		return listaComentarios;
+//	}
+//
+//
+//
+//	public void setListaComentarios(List<Comentario> listaComentarios) {
+//		this.listaComentarios = listaComentarios;
+//	}
+	
+
+	
+	public int getTotalPuntuacion() {
+		return totalPuntuacion;
 	}
 
-
-
-	public void setComentariosPendientes(List<Comentario> comentariosPendientes) {
-		this.comentariosPendientes = comentariosPendientes;
+	public void setTotalPuntuacion(int totalPuntuacion) {
+		this.totalPuntuacion = totalPuntuacion;
 	}
 
-
-
-	public List<Comentario> getListaComentarios() {
-		return listaComentarios;
+	public int getNumeroValoraciones() {
+		return numeroValoraciones;
 	}
 
-
-
-	public void setListaComentarios(List<Comentario> listaComentarios) {
-		this.listaComentarios = listaComentarios;
+	public void setNumeroValoraciones(int numeroValoraciones) {
+		this.numeroValoraciones = numeroValoraciones;
 	}
 
+	public double getPuntuacionMedia() {
+		return puntuacionMedia;
+	}
 
+	public void setPuntuacionMedia(double nuevaPuntuacion) {
+		this.totalPuntuacion += nuevaPuntuacion;
+		this.numeroValoraciones++;
+		
+		this.puntuacionMedia = this.totalPuntuacion/this.numeroValoraciones;
+	}
 
 	@Override
 	public int hashCode() {

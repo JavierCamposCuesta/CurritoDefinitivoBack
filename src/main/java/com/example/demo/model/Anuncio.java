@@ -48,6 +48,7 @@ public class Anuncio {
 //	@OneToMany(cascade = CascadeType.ALL,fetch=FetchType.EAGER,orphanRemoval = true)
 //	private List<String>listaImagenes = new ArrayList<>();
 	
+    private byte[] file;
 	
 	private String categoria;
 	
@@ -61,7 +62,6 @@ public class Anuncio {
 	private String tipoPrecio;
 	private String ubicacion;
 	
-	private boolean enFavoritos = false;
 	
 
 	
@@ -72,13 +72,14 @@ public class Anuncio {
 		
 	}
 
-	public Anuncio(String titulo, String categoria,double precio, String tipoPrecio, String descripcion) {
+	public Anuncio(String titulo, String categoria,double precio, String tipoPrecio, String descripcion, String ubicacion) {
 		super();
 		this.titulo = titulo;
 		this.precio = precio;
 		this.descripcion = descripcion;
 		this.categoria = categoria;
 		this.tipoPrecio = tipoPrecio;
+		this.ubicacion = ubicacion;
 	}
 
 	public int getId() {
@@ -113,16 +114,19 @@ public class Anuncio {
 		this.descripcion = descripcion;
 	}
 
-//	public List<String> getListaImagenes() {
-//		return listaImagenes;
-//	}
-//
-//	public void setListaImagenes(List<String> listaImagenes) {
-//		this.listaImagenes = listaImagenes;
-//	}
 
 	public String getCategoria() {
 		return categoria;
+	}
+
+	
+
+	public byte[] getFile() {
+		return file;
+	}
+
+	public void setFile(byte[] file) {
+		this.file = file;
 	}
 
 	public void setCategoria(String categoria) {
@@ -191,40 +195,8 @@ public class Anuncio {
 		this.ubicacion = ubicacion;
 	}
 
-	public boolean isEnFavoritos() {
-		return enFavoritos;
-	}
-
-	public void setEnFavoritos(boolean enFavoritos) {
-		this.enFavoritos = enFavoritos;
-	}
-	
 	
 
-
-	
-	
-	
-	
-	
-	
-
-//	@Override
-//	public int hashCode() {
-//		return Objects.hash(id);
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		Anuncio other = (Anuncio) obj;
-//		return id == other.id;
-//	}
 	
 	
 	

@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
@@ -9,32 +10,36 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Clase comentario
  * @author javier
  *
  */
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-public class Comentario {
+public class Comentario{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@OneToOne()
-	@JsonBackReference
 	private Usuario usuarioComentado;
 	
 	@OneToOne()
-	@JsonBackReference
 	private Usuario usuarioComentador;
 	
 	private String textoComentario;
 	private LocalDate fecha;
+	private int puntuacionEstrellas;
+	
+	private boolean realizado = false;
+	
+	private boolean realizaste = false;
 	
 	@OneToOne()
-	@JsonBackReference
 	private Anuncio anuncio;
 	
 	public Comentario () {
@@ -96,6 +101,36 @@ public class Comentario {
 	public void setAnuncio(Anuncio anuncio) {
 		this.anuncio = anuncio;
 	}
+
+	public int getPuntuacionEstrellas() {
+		return puntuacionEstrellas;
+	}
+
+	public void setPuntuacionEstrellas(int puntuacionEstrellas) {
+		this.puntuacionEstrellas = puntuacionEstrellas;
+	}
+
+	public boolean isRealizado() {
+		return realizado;
+	}
+
+	public void setRealizado(boolean realizado) {
+		this.realizado = realizado;
+	}
+
+	public boolean isRealizaste() {
+		return realizaste;
+	}
+
+	public void setRealizaste(boolean realizaste) {
+		this.realizaste = realizaste;
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 

@@ -45,8 +45,7 @@ import com.example.demo.service.UsuarioService;
  * @author javier
  *
  */
-@CrossOrigin
-//@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
+@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @RestController
 public class CurritoController {
 	

@@ -42,7 +42,8 @@ import com.example.demo.security.JWTUtil;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.UsuarioService;
 
-@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
+//@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
+@CrossOrigin(origins = "*")
 @RestController
 public class AuthController {
 	

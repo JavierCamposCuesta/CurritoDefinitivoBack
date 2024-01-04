@@ -1,0 +1,7 @@
+services:
+  - name: java_app
+    buildCommand: "docker build -t my-java-app ."
+    startCommand: "docker run -p 8080:8080 my-java-app"
+    env:
+      - key: RENDER_SYSTEM_PROPERTIES
+        value: "java.runtime.version=1.8"

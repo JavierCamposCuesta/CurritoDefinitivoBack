@@ -87,7 +87,7 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> loginHandler(@RequestBody LoginCredentials body){
         try {
-        	logger.debug("##### log de prueba");
+        	logger.trace("##### log de prueba");
             UsernamePasswordAuthenticationToken authInputToken =
                     new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
 

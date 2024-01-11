@@ -41,6 +41,8 @@ import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.security.JWTUtil;
 import com.example.demo.service.EmailService;
 import com.example.demo.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //@CrossOrigin(origins = "https://javiercamposcuesta.github.io")
 @CrossOrigin(origins = "*")
@@ -55,7 +57,7 @@ public class AuthController {
     
     @Autowired
 	private UsuarioService usuarioService;
-    
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     
     /**
      * Metodo para registrar usuarios
@@ -85,6 +87,7 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> loginHandler(@RequestBody LoginCredentials body){
         try {
+        	logger.debug("##### log de prueba");
             UsernamePasswordAuthenticationToken authInputToken =
                     new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
 
@@ -93,6 +96,7 @@ public class AuthController {
             String token = jwtUtil.generateToken(body.getEmail());
             return Collections.singletonMap("jwt_token", token);
         }catch (AuthenticationException authExc){
+        	logger.info("se ha producido un error");
         	throw new LoginInvalidException();
 //            throw new RuntimeException("Invalid Login Credentials");
         }

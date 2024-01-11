@@ -22,7 +22,7 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<Usuario> userRes = usuarioRepository.findByEmail(email);
-        if(userRes.isEmpty())
+        if(!userRes.isPresent())
             throw new UsernameNotFoundException("Could not findUser with email = " + email);
         Usuario user = userRes.get();
         return new org.springframework.security.core.userdetails.User(

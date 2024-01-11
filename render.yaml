@@ -4,4 +4,4 @@ services:
     startCommand: "docker run -p 8080:8080 my-java-app"
     env:
       - key: RENDER_SYSTEM_PROPERTIES
-        value: "java.runtime.version=1.8"
+        value: "java.runtime.version=11"
